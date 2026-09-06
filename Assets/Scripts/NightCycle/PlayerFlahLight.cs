@@ -8,6 +8,9 @@ namespace NightCycle
 
         //test
         //[Inject] private SaveSystem _saveSystem;
+        [Header("Reveal Shader Settings")]
+        [SerializeField] private float revealDistance = 15f;
+        [SerializeField] private float revealAngle = 25f;
         //test
         //[SerializeField] Light flashlight;
         public Light flashlight;
@@ -40,7 +43,32 @@ namespace NightCycle
                 TurnOFF();
             }*/
         }
-        
+
+        private void UpdateRevealShader()
+        {
+            // используем light_active, чтобы понимать, включена ли корона
+            if (light_active)
+            {
+                //Debug.Log("QWQWQQW");
+
+                // ѕередаем мировые координаты и вектор направлени€ пр€мо от объекта фонар€
+                Shader.SetGlobalVector("_CrownPos", flashlight.transform.position);
+                Shader.SetGlobalVector("_CrownDir", flashlight.transform.forward.normalized);
+                Shader.SetGlobalFloat("_CrownDistance", revealDistance);
+
+                // Dot Product в шейдере оперирует косинусами. 
+                // „тобы видеокарте не приходилось считать углы, мы считаем косинус один раз на процессоре.
+                float angleCos = Mathf.Cos(revealAngle * Mathf.Deg2Rad);
+                Shader.SetGlobalFloat("_CrownAngle", angleCos);
+
+                //Debug.Log($"[Shader Debug] Pos: {Shader.GetGlobalVector("_CrownPos")}, Dist: {Shader.GetGlobalFloat("_CrownDistance")}, AngleCos: {Shader.GetGlobalFloat("_CrownAngle")}");
+            }
+            else
+            {
+                // ≈сли корона выключена, обнул€ем дистанцию про€влени€, скрыва€ всех монстров и руны
+                Shader.SetGlobalFloat("_CrownDistance", 0f);
+            }
+        }
         private void Update()
         {
             Debug.Log(flashlight.intensity);
@@ -85,6 +113,9 @@ namespace NightCycle
                     light_active = true;
                 }
             }
+
+            UpdateRevealShader();
+
         }
 
         private void play_enable()

@@ -115,6 +115,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerInteraction
   playerReach: 3
   playerStateController: {fileID: 8411479665512441087}
+  can_interact: 1
 --- !u!114 &8411479665512441087
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -517,7 +518,7 @@ Light:
   m_Color: {r: 0.90943396, g: 0.5219033, b: 0.30714837, a: 1}
   m_Intensity: 30
   m_Range: 13
-  m_SpotAngle: 114.101654
+  m_SpotAngle: 131.14926
   m_InnerSpotAngle: 44.532284
   m_CookieSize: 10
   m_Shadows:
@@ -737,7 +738,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7358183692309942090}
-  m_Enabled: 0
+  m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -849,15 +850,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: b4962638914751441b43c9e643ed6c3b, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.28
+      value: 0.8
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: b4962638914751441b43c9e643ed6c3b, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -2.62
+      value: -2.05
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: b4962638914751441b43c9e643ed6c3b, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.05
+      value: -0.56
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: b4962638914751441b43c9e643ed6c3b, type: 3}
       propertyPath: m_LocalRotation.w
@@ -901,7 +902,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3624717383608971118, guid: b4962638914751441b43c9e643ed6c3b, type: 3}
       propertyPath: m_Enabled
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3624717383608971118, guid: b4962638914751441b43c9e643ed6c3b, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
@@ -943,6 +944,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8dc4f7a4e3cfdc4bba66c0f53312fe3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerFlashlight
+  revealDistance: 11
+  revealAngle: 25
   flashlight: {fileID: 7374664904985201373}
   baseIntensity: 1
   swayAmount: 0.04
