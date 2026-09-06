@@ -311,10 +311,10 @@ MonoBehaviour:
   Path: Assets/FMOD_project/QMD/Build/Desktop/Master.bank
   Name: Master
   StudioPath: bank:/Master
-  lastModified: 639241263114615254
+  lastModified: 639242939493229582
   FileSizes:
   - Name: Desktop
-    Value: 7407968
+    Value: 7417600
   Exists: 1
 --- !u!114 &-4029956871787623766
 MonoBehaviour:
@@ -471,6 +471,7 @@ MonoBehaviour:
   - {fileID: -6185306176472155119}
   - {fileID: -8647045381554864713}
   - {fileID: 3762428620662624110}
+  - {fileID: 2783953248006518876}
   EditorParameters:
   - {fileID: 4742735435840111238}
   MasterBanks:
@@ -478,7 +479,7 @@ MonoBehaviour:
   StringsBanks:
   - {fileID: 6213692079555805138}
   cacheVersion: 131859
-  cacheTime: 639241263114615254
+  cacheTime: 639242939493289561
   SerializableEventsDict:
   - key: event:/Characters/Main/Footsteps/Footsteps_scene1
     index: 0
@@ -542,6 +543,8 @@ MonoBehaviour:
     index: 29
   - key: event:/Scenes/Hom/MusicBox/Chase music stop
     index: 30
+  - key: event:/Scenes/Book
+    index: 31
 --- !u!114 &52534761935187065
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -623,6 +626,33 @@ MonoBehaviour:
   MinDistance: 1
   MaxDistance: 20
   Length: 500
+--- !u!114 &2783953248006518876
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/Scenes/Book
+  m_EditorClassIdentifier: FMODUnityEditor::FMODUnity.EditorEventRef
+  Path: event:/Scenes/Book
+  Guid:
+    Data1: -247246806
+    Data2: 1168773667
+    Data3: -790793823
+    Data4: 345888213
+  Banks:
+  - {fileID: -4548252348506558157}
+  IsStream: 0
+  Is3D: 0
+  IsOneShot: 1
+  Parameters: []
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 920
 --- !u!114 &2898275927786066180
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -952,10 +982,10 @@ MonoBehaviour:
   Path: Assets/FMOD_project/QMD/Build/Desktop/Master.strings.bank
   Name: Master.strings
   StudioPath: bank:/Master.strings
-  lastModified: 639237129902083955
+  lastModified: 639242939493289561
   FileSizes:
   - Name: Desktop
-    Value: 2220
+    Value: 2254
   Exists: 1
 --- !u!114 &6713093496099956156
 MonoBehaviour:
