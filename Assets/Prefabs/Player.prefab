@@ -738,7 +738,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7358183692309942090}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -954,3 +954,6 @@ MonoBehaviour:
   trig_on: enable
   trig_off: disable
   light_active: 0
+  Essense: 5
+  decreaseStep: -2
+  decreaseTime: 2

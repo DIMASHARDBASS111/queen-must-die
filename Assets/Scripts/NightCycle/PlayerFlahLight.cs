@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using Zenject;
 
@@ -26,6 +27,10 @@ namespace NightCycle
 
         public bool light_active = false;
 
+        public int Essense = 5;
+        public int decreaseStep = -1;
+        public float decreaseTime = 2.0f;
+
         Vector3 initialLocalPos;
 
 
@@ -33,15 +38,6 @@ namespace NightCycle
         {
             initialLocalPos = transform.localPosition;
             baseIntensity = flashlight.intensity;
-            /*if (_saveSystem.HasLoadedData)
-            {
-                var data = _saveSystem.CurrentData;
-                if (data.isLightOn)
-                {
-                    TurnOn();
-                }
-                TurnOFF();
-            }*/
         }
 
         private void UpdateRevealShader()
@@ -49,7 +45,6 @@ namespace NightCycle
             // используем light_active, чтобы понимать, включена ли корона
             if (light_active)
             {
-                //Debug.Log("QWQWQQW");
 
                 // Передаем мировые координаты и вектор направления прямо от объекта фонаря
                 Shader.SetGlobalVector("_CrownPos", flashlight.transform.position);
@@ -71,38 +66,26 @@ namespace NightCycle
         }
         private void Update()
         {
+            Debug.Log(Essense);
+
             Debug.Log(flashlight.intensity);
             if (!flashlight.enabled) return;
 
             float mouseX = Input.GetAxis("Mouse X");
             float mouseY = Input.GetAxis("Mouse Y");
 
-            //model.transform.localPosition = initialLocalPos;
-            /*Vector3 targetPos = initialLocalPos +
-                                new Vector3(-mouseX * swayAmount, -mouseY * swayAmount, 0f);
+            CheckEssense();
 
-            transform.localPosition =
-                Vector3.Lerp(transform.localPosition, targetPos, Time.deltaTime * swaySmooth);*/
-
-            //flashlight.intensity = baseIntensity + Mathf.Sin(Time.time * 2f) * 0.5f*baseIntensity;
-
-            //if (can_shimmer)
-            //{
-                
-            //flashlight.intensity = baseIntensity + Mathf.Sin(Time.time * 2f) * 0.5f * baseIntensity;
-            //}
-
-            if (Input.GetKeyDown(KeyCode.F))
+            if (Input.GetKeyDown(KeyCode.F) && Essense > 0)
             {
                 //if (IsActiveLight())
                 if(light_active)
                 {
                     
-                    //TurnOFFLight();
-                    //Debug.Log("dis");
                     play_disable();
                     //can_shimmer = false;
                     light_active = false;
+                    Stop_Essense_Decrease();
                 }
                 else
                 {
@@ -111,6 +94,7 @@ namespace NightCycle
                     play_enable();
                     //can_shimmer = true;
                     light_active = true;
+                    Start_Essense_Decrease();
                 }
             }
 
@@ -126,6 +110,7 @@ namespace NightCycle
 
         private void play_disable()
         {
+            //Debug.Log("%^%^%^%^%^%^%^%^%%%%%%%%%%%%%%%%%%%%%%%");
             anim.ResetTrigger(trig_on);
             anim.SetTrigger(trig_off);
         }
@@ -169,6 +154,54 @@ namespace NightCycle
                 statue.advance_pose();
             }
 
+        }
+
+        public void Start_Essense_Decrease()
+        {
+            StartCoroutine(EssenseRoutine(Essense, decreaseStep, decreaseTime));
+        }
+
+        public void Stop_Essense_Decrease()
+        {
+            StopCoroutine(EssenseRoutine(Essense, decreaseStep, decreaseTime));
+        }
+
+        private IEnumerator EssenseRoutine(int startAmount, int step, float changeTime)
+        {
+
+            while (light_active)
+            {
+                startAmount = Essense;
+
+                float elapsedTime = 0f;
+                int endAmount = startAmount + step;
+
+                while (elapsedTime < changeTime)
+                {
+                    elapsedTime += Time.deltaTime;
+
+                    float progress = elapsedTime / changeTime;
+
+                    Essense = Mathf.RoundToInt(Mathf.Lerp(startAmount, endAmount, progress));
+
+                    yield return null;
+                }
+
+                Essense = endAmount;
+
+            }
+
+        }
+
+        private void CheckEssense()
+        {
+            if(Essense <= 0 && light_active)
+            {
+                play_disable();
+                light_active = false;
+                Stop_Essense_Decrease();
+                Essense = 0;
+            }
         }
 
     }
