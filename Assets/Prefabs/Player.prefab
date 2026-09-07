@@ -946,14 +946,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerFlashlight
   revealDistance: 11
   revealAngle: 25
+  revealSmoothSpeed: 4
+  coneBackOffset: 1.5
   flashlight: {fileID: 7374664904985201373}
-  baseIntensity: 1
-  swayAmount: 0.04
-  swaySmooth: 8
   anim: {fileID: 4872183160668967902}
   trig_on: enable
   trig_off: disable
   light_active: 0
-  Essense: 5
-  decreaseStep: -2
-  decreaseTime: 2
+  maxEssence: 99
+  currentEssence: 50
+  essenceDrainPerSecond: 0.5

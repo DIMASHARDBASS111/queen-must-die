@@ -5,13 +5,15 @@ namespace NightCycle
 {
     public class PickupLight : MonoBehaviour
     {
-        [SerializeField] bool destroyOnPickup = true;
-        [Inject] PlayerFlashlight flashlight;
+        [SerializeField] private bool destroyOnPickup = true;
+
+        [Inject] private PlayerFlashlight flashlight;
+
         public void Pickup()
         {
+            // Используем новый удобный метод включения
             flashlight.TurnOn();
-            flashlight.light_active = true;
-            flashlight.Start_Essense_Decrease();
+            flashlight.TurnOnCrown();
 
             if (destroyOnPickup)
             {
@@ -22,11 +24,8 @@ namespace NightCycle
 
         public void ChangeEssense(int value)
         {
-            flashlight.Essense += value;
-
-            flashlight.Essense = Mathf.Clamp(flashlight.Essense, 0, 99);
-
+            // Передаем значение в централизованный метод
+            flashlight.AddEssence(value);
         }
-
     }
 }

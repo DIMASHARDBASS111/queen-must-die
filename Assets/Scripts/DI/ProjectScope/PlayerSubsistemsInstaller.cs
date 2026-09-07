@@ -12,6 +12,7 @@ namespace NightCycle
         [SerializeField] InventoryUI inventoryUI;
         [SerializeField] HUDController hUDController;
         [SerializeField] QuestUI questUI;
+        [SerializeField] FlashlightUI flashlightUI;
         [SerializeField] HintManager HintUI;
         [SerializeField] SettingsMenu settingsMenu;
         [SerializeField] WorldState state;
@@ -26,6 +27,7 @@ namespace NightCycle
             //Container.Bind<Volume>().FromComponentInHierarchy().AsSingle();
             Container.Bind<SettingsMenu>().FromComponentInNewPrefab(settingsMenu).AsSingle().NonLazy();
             Container.Bind<WorldState>().FromComponentInNewPrefab(state).AsSingle().NonLazy();
+            Container.Bind<FlashlightUI>().FromComponentInNewPrefab(flashlightUI).AsSingle().NonLazy();
         }
     }
 }

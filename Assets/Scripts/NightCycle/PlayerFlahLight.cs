@@ -1,4 +1,3 @@
-using System.Collections;
 using UnityEngine;
 using Zenject;
 
@@ -6,203 +5,169 @@ namespace NightCycle
 {
     public class PlayerFlashlight : MonoBehaviour
     {
+        private FlashlightUI flashlightUI;
 
-        //test
-        //[Inject] private SaveSystem _saveSystem;
+        [Inject]
+        public void Construct(FlashlightUI _flashlightUI)
+        {
+            flashlightUI = _flashlightUI;
+        }
+
         [Header("Reveal Shader Settings")]
         [SerializeField] private float revealDistance = 15f;
         [SerializeField] private float revealAngle = 25f;
-        //test
-        //[SerializeField] Light flashlight;
+        [SerializeField] private float revealSmoothSpeed = 4f; // Скорость плавного появления
+        [SerializeField] private float coneBackOffset = 1.5f; // Сдвиг конуса назад, чтобы видеть объекты вплотную
+
+        [Header("Flashlight Base")]
         public Light flashlight;
-        private bool can_shimmer = false;
-        [SerializeField] float baseIntensity = 1.0f;
-
-        [SerializeField] float swayAmount = 0.04f;
-        [SerializeField] float swaySmooth = 8f;
-
-        [SerializeField] Animator anim;
-        [SerializeField] string trig_on;
-        [SerializeField] string trig_off;
-
+        [SerializeField] private Animator anim;
+        [SerializeField] private string trig_on = "enable";
+        [SerializeField] private string trig_off = "disable";
         public bool light_active = false;
 
-        public int Essense = 5;
-        public int decreaseStep = -1;
-        public float decreaseTime = 2.0f;
+        [Header("Essence Settings")]
+        [SerializeField] private float maxEssence = 99f;
+        public float currentEssence = 5f;
+        [SerializeField] private float essenceDrainPerSecond = 0.5f; // Сколько тратится в секунду
 
-        Vector3 initialLocalPos;
+        private float currentShaderDistance = 0f;
+        private int lastDisplayedEssence = -1; // Для оптимизации UI (чтобы не обновлять текст каждый кадр)
 
+        // Публичные свойства для чтения другими скриптами
+        public float RevealDistance => revealDistance;
+        public float RevealAngle => revealAngle;
 
-        void Awake()
+        private void Awake()
         {
-            initialLocalPos = transform.localPosition;
-            baseIntensity = flashlight.intensity;
+            UpdateUI();
+
+            // Если свет выключен со старта, сразу задаем шейдеру 0, чтобы без рывков
+            currentShaderDistance = light_active ? revealDistance : 0f;
         }
 
-        private void UpdateRevealShader()
-        {
-            // используем light_active, чтобы понимать, включена ли корона
-            if (light_active)
-            {
-
-                // Передаем мировые координаты и вектор направления прямо от объекта фонаря
-                Shader.SetGlobalVector("_CrownPos", flashlight.transform.position);
-                Shader.SetGlobalVector("_CrownDir", flashlight.transform.forward.normalized);
-                Shader.SetGlobalFloat("_CrownDistance", revealDistance);
-
-                // Dot Product в шейдере оперирует косинусами. 
-                // Чтобы видеокарте не приходилось считать углы, мы считаем косинус один раз на процессоре.
-                float angleCos = Mathf.Cos(revealAngle * Mathf.Deg2Rad);
-                Shader.SetGlobalFloat("_CrownAngle", angleCos);
-
-                //Debug.Log($"[Shader Debug] Pos: {Shader.GetGlobalVector("_CrownPos")}, Dist: {Shader.GetGlobalFloat("_CrownDistance")}, AngleCos: {Shader.GetGlobalFloat("_CrownAngle")}");
-            }
-            else
-            {
-                // Если корона выключена, обнуляем дистанцию проявления, скрывая всех монстров и руны
-                Shader.SetGlobalFloat("_CrownDistance", 0f);
-            }
-        }
         private void Update()
         {
-            Debug.Log(Essense);
-
-            Debug.Log(flashlight.intensity);
             if (!flashlight.enabled) return;
 
-            float mouseX = Input.GetAxis("Mouse X");
-            float mouseY = Input.GetAxis("Mouse Y");
+            HandleInput();
+            ProcessEssence();
+            UpdateRevealShaderSmoothly();
+        }
 
-            CheckEssense();
-
-            if (Input.GetKeyDown(KeyCode.F) && Essense > 0)
+        private void HandleInput()
+        {
+            // Включаем, только если есть эссенция
+            if (Input.GetKeyDown(KeyCode.F))
             {
-                //if (IsActiveLight())
-                if(light_active)
+                if (light_active)
                 {
-                    
-                    play_disable();
-                    //can_shimmer = false;
-                    light_active = false;
-                    Stop_Essense_Decrease();
+                    TurnOffCrown();
                 }
-                else
+                else if (currentEssence > 0)
                 {
-                    //TurnOnLight();
-                    //Debug.Log("en");
-                    play_enable();
-                    //can_shimmer = true;
-                    light_active = true;
-                    Start_Essense_Decrease();
+                    TurnOnCrown();
                 }
             }
-
-            UpdateRevealShader();
-
         }
 
-        private void play_enable()
+        private void ProcessEssence()
         {
+            if (light_active)
+            {
+                // Плавно отнимаем эссенцию (работает стабильнее корутин)
+                currentEssence -= essenceDrainPerSecond * Time.deltaTime;
+
+                // Жесткий лимит от 0 до maxEssence
+                currentEssence = Mathf.Clamp(currentEssence, 0f, maxEssence);
+
+                UpdateUI();
+
+                // Автоматическое выключение, если эссенция иссякла
+                if (currentEssence <= 0)
+                {
+                    TurnOffCrown();
+                }
+            }
+        }
+
+        private void UpdateUI()
+        {
+            // Округляем в большую сторону, чтобы 0 показывался только когда ресурса реально нет
+            int displayValue = Mathf.CeilToInt(currentEssence);
+
+            // Оптимизация: меняем текст только если число реально изменилось
+            if (displayValue != lastDisplayedEssence)
+            {
+                flashlightUI.SetText(displayValue.ToString());
+                lastDisplayedEssence = displayValue;
+            }
+        }
+
+        private void UpdateRevealShaderSmoothly()
+        {
+            // Целевая дистанция: если включен - revealDistance, если выключен - 0
+            float targetDistance = light_active ? revealDistance : 0f;
+
+            // Плавный переход
+            currentShaderDistance = Mathf.Lerp(currentShaderDistance, targetDistance, Time.deltaTime * revealSmoothSpeed);
+
+            // Тот самый хак для устранения "мертвой зоны" вплотную
+            Vector3 virtualOrigin = flashlight.transform.position - (flashlight.transform.forward * coneBackOffset);
+
+            Shader.SetGlobalVector("_CrownPos", virtualOrigin);
+            Shader.SetGlobalVector("_CrownDir", flashlight.transform.forward.normalized);
+            Shader.SetGlobalFloat("_CrownDistance", currentShaderDistance);
+
+            float angleCos = Mathf.Cos(revealAngle * Mathf.Deg2Rad);
+            Shader.SetGlobalFloat("_CrownAngle", angleCos);
+        }
+
+        public void TurnOnCrown()
+        {
+            flashlightUI.Open();
             anim.ResetTrigger(trig_off);
             anim.SetTrigger(trig_on);
+            light_active = true;
         }
 
-        private void play_disable()
+        public void TurnOffCrown()
         {
-            //Debug.Log("%^%^%^%^%^%^%^%^%%%%%%%%%%%%%%%%%%%%%%%");
+            flashlightUI.Close();
             anim.ResetTrigger(trig_on);
             anim.SetTrigger(trig_off);
+            light_active = false;
         }
 
-        public void TurnOn()
+        // Публичный метод для добавления эссенции из других скриптов
+        public void AddEssence(float amount)
         {
-            this.gameObject.SetActive(true);
+            currentEssence += amount;
+            currentEssence = Mathf.Clamp(currentEssence, 0f, maxEssence);
+            UpdateUI();
         }
 
-        public void TurnOFF()
-        {
-            this.gameObject.SetActive(false);
-        }
-
-        public bool IsActive()
-        {
-            return this.gameObject.activeSelf;
-        }
-
-        public void TurnOnLight()
-        {
-            flashlight.gameObject.SetActive(true);
-        }
-
-        public void TurnOFFLight()
-        {
-            flashlight.gameObject.SetActive(false);
-        }
-
-        public bool IsActiveLight()
-        {
-            return flashlight.gameObject.activeSelf;
-        }
+        // Старые методы для совместимости
+        public void TurnOn() => this.gameObject.SetActive(true);
+        public void TurnOFF() => this.gameObject.SetActive(false);
+        public bool IsActive() => this.gameObject.activeSelf;
+        public void TurnOnLight() => flashlight.gameObject.SetActive(true);
+        public void TurnOFFLight() => flashlight.gameObject.SetActive(false);
+        public bool IsActiveLight() => flashlight.gameObject.activeSelf;
 
         public void StatueChase()
         {
             StatueController[] Statues = Object.FindObjectsByType<StatueController>(FindObjectsSortMode.None);
-
             foreach (StatueController statue in Statues)
             {
                 statue.advance_pose();
             }
-
         }
 
-        public void Start_Essense_Decrease()
+        // Метод возвращает точку начала конуса (с учетом того самого отступа за спину)
+        public Vector3 GetVirtualOrigin()
         {
-            StartCoroutine(EssenseRoutine(Essense, decreaseStep, decreaseTime));
+            return flashlight.transform.position - (flashlight.transform.forward * coneBackOffset);
         }
-
-        public void Stop_Essense_Decrease()
-        {
-            StopCoroutine(EssenseRoutine(Essense, decreaseStep, decreaseTime));
-        }
-
-        private IEnumerator EssenseRoutine(int startAmount, int step, float changeTime)
-        {
-
-            while (light_active)
-            {
-                startAmount = Essense;
-
-                float elapsedTime = 0f;
-                int endAmount = startAmount + step;
-
-                while (elapsedTime < changeTime)
-                {
-                    elapsedTime += Time.deltaTime;
-
-                    float progress = elapsedTime / changeTime;
-
-                    Essense = Mathf.RoundToInt(Mathf.Lerp(startAmount, endAmount, progress));
-
-                    yield return null;
-                }
-
-                Essense = endAmount;
-
-            }
-
-        }
-
-        private void CheckEssense()
-        {
-            if(Essense <= 0 && light_active)
-            {
-                play_disable();
-                light_active = false;
-                Stop_Essense_Decrease();
-                Essense = 0;
-            }
-        }
-
     }
 }
