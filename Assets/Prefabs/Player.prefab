@@ -946,7 +946,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerFlashlight
   revealDistance: 11
   revealAngle: 25
-  revealSmoothSpeed: 4
+  revealSmoothSpeed: 1
   coneBackOffset: 1.5
   flashlight: {fileID: 7374664904985201373}
   anim: {fileID: 4872183160668967902}
