@@ -12766,6 +12766,14 @@ MonoBehaviour:
   noteEvent:
     m_PersistentCalls:
       m_Calls: []
+  interact_sound:
+    Guid:
+      Data1: -1225164423
+      Data2: 1084857888
+      Data3: -266600318
+      Data4: -1490920368
+    Path: event:/Scenes/Envelope
+  trigger_sound_once: 0
 --- !u!114 &558467689
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -39659,6 +39667,14 @@ MonoBehaviour:
   noteEvent:
     m_PersistentCalls:
       m_Calls: []
+  interact_sound:
+    Guid:
+      Data1: 0
+      Data2: 0
+      Data3: 0
+      Data4: 0
+    Path: 
+  trigger_sound_once: 0
 --- !u!114 &1426559483
 MonoBehaviour:
   m_ObjectHideFlags: 0
