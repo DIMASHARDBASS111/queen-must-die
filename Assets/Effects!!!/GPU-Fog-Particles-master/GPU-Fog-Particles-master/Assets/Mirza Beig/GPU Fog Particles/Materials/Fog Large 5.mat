@@ -84,7 +84,7 @@ Material:
     - _BumpScale: 1
     - _CameraDepthFadeDistance: 1
     - _CameraDepthFadeOffset: 2
-    - _CameraDepthFadeRange: 2
+    - _CameraDepthFadeRange: 41.69
     - _CameraDepthFadeStart: 0
     - _CameraFadingEnabled: 1
     - _CameraFarFadeDistance: 2
@@ -117,7 +117,7 @@ Material:
     - _SimpleNoiseScale: 20
     - _SimplexNoiseAmount: 0.94
     - _SimplexNoiseRemap: 0.5
-    - _SimplexNoiseScale: 3
+    - _SimplexNoiseScale: 5
     - _SmoothnessTextureChannel: 0
     - _SoftParticlesEnabled: 1
     - _SoftParticlesFarFadeDistance: 1
