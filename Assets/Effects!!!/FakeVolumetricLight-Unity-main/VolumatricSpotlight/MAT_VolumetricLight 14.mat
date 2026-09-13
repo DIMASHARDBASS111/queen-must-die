@@ -67,7 +67,7 @@ Material:
     - _Cull: 2
     - _DstBlend: 10
     - _DstBlendAlpha: 10
-    - _EdgeFalloff: 2.3
+    - _EdgeFalloff: 3.77
     - _Noise_Strength: 0.3
     - _Opacity: 0.042
     - _QueueControl: 0
